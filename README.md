@@ -9,8 +9,9 @@
 - Convert files
 
 ## How To Use
-- Place MediaTools.ps1 into a folder of it's own
-- Install exes and place into folder
+- Place MediaTools.ps1 into a folder
+- make a new "Downloads" folder in the same directory
+- Install exes and place into the same directory
   - https://www.gyan.dev/ffmpeg/builds/ (ffmpeg-git-essentials.7z)
     - ffmpeg.exe
     - ffplay.exe

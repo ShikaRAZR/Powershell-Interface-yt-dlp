@@ -165,14 +165,14 @@ function AutoConvert-ImageFiles {
 do {
     Set-WindowSize
     Show-Menu
-    $UserInput = Read-Host "Choose a choice by typing the number"
+    $UserInput = Read-Host "Choose a choice by typing the corresponding number"
 
     if ($UserInput -eq 1) { Download-Song }
     elseif ($UserInput -eq 2) { Download-Video }
     elseif ($UserInput -eq 3) { Convert-File }
     elseif ($UserInput -eq 4) { Grab-Thumbnail }
     elseif ($UserInput -eq 5) { Download-Playlist }
-    elseif ($UserInput -eq 6) { Update-Youtube }
+    elseif ($UserInput -eq 6) { Update-Youtube $version = .\yt-dlp.exe --version }
     elseif ($UserInput -eq 7) { 'Exiting...' }
     else { "Invalid Input" }
     if ($UserInput -ne 7) {

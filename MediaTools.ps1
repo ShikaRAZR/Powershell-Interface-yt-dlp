@@ -8,7 +8,8 @@ $currentDirectory = (Get-Location)
 $version = .\yt-dlp.exe --version
 function Show-Menu {
     Clear-Host
-    Write-Host -BackgroundColor Blue -ForegroundColor Black "(Ctrl + C CANCELS ANY PROCESS GOING ON, press twice)"
+    Write-Host -BackgroundColor Blue -ForegroundColor Black "(Ctrl + C CANCELS ANY PROCESS GOING ON, may need to press twice)"
+    Write-Host -BackgroundColor Blue -ForegroundColor Black "(If there are any issues, try selecting the UPDATE option)"
     Write-Host "Media Tools Menu"
     Write-Host "$currentDirectory"
     Write-Host "Youtube-dl Version: $version"

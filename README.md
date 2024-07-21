@@ -19,3 +19,12 @@
   - https://github.com/yt-dlp/yt-dlp (Installation Windows x64)
     - yt-dlp.exe
 - Run MediaTools.ps1 with powershell
+
+## Make Shortcut to Execute Powershell
+- Make a short cut for MediaTools.ps1
+- Properties - add to - Target:
+
+      powershell.exe -ExecutionPolicy Bypass -File
+- Example: 
+
+      powershell.exe -ExecutionPolicy Bypass -File "E:\Users\matt\ytdlpscript\MediaTools.ps1"

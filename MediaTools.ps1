@@ -17,13 +17,14 @@ function Show-Menu {
     Write-Host "2: Download Video"
     Write-Host "3: Convert File"
     Write-Host "4: Youtube Video Thumbnail"
-    Write-Host "5: Download Youtube Playlist (Specific Range, With Prefix #)"
-    Write-Host "6: Update"
-    Write-Host "7: Exit"
+    Write-Host "5: Download Youtube Playlist (Autonumber Start, Specific Range, With Prefix #)"
+    Write-Host "6: Custom Commands List"
+    Write-Host "7: Update"
+    Write-Host "8: Exit"
 }
 
 
-#Downloads songs in mp3 format
+# 1 Downloads songs in mp3 format
 function Download-Song {
     $UserInput = Read-Host "Enter A Youtube Link"
     $link = $UserInput
@@ -33,7 +34,7 @@ function Download-Song {
     AutoConvert-AudioFiles
 }
 
-#Downloads videos in mp4 format
+# 2 Downloads videos in mp4 format
 function Download-Video {
     $UserInput = Read-Host "Enter A Youtube Link"
     $link = $UserInput
@@ -43,7 +44,7 @@ function Download-Video {
     AutoConvert-VideoFiles
 }
 
-#Converts a file type in the current directory
+# 3 Converts a file type in the current directory
 function Convert-File {
     Write-Host "All files in the directory with the initial format will be converted to final format."
     $UserInput = Read-Host "Enter Initial Format"
@@ -60,7 +61,7 @@ function Convert-File {
     Write-Host -BackgroundColor Green -ForegroundColor Black "Conversion Complete"
 }
 
-#Grabs youtube video thumbnail
+# 4 Grabs youtube video thumbnail
 function Grab-Thumbnail {
     Write-Host "1: Without Prefix Number (Single YT Vids)?"
     Write-Host "2: With Prefix Number (For YT Playlists)?"
@@ -74,12 +75,14 @@ function Grab-Thumbnail {
     }
     elseif ($UserInput -eq 2) { 
         Write-Host "Playlist Range"
+        $UserInput = Read-Host "Enter AutoNumber Start"
+        $autonumber = $UserInput
         $UserInput = Read-Host "Enter Starting Range"
         $start = $UserInput
         $UserInput = Read-Host "Enter Ending Range"
         $end = $UserInput
         Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Thumbnail(s)"
-        .\yt-dlp.exe $link -o "\Downloads\%(playlist_index)s-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --write-thumbnail --skip-download 
+        .\yt-dlp.exe $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end  --autonumber-start $autonumber --write-thumbnail --skip-download 
         AutoConvert-ImageFiles
         Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Thumbnail(s) Complete"
     }
@@ -87,26 +90,75 @@ function Grab-Thumbnail {
     
 }
 
-#Updates youtube-dl
-function Update-Youtube {
-    .\yt-dlp.exe -U
-}
-
-#Downloads Youtube Playlist in mp3 format, asks for range of songs (if range is out of bounds only downloads the songs within available range)
+# 5 Downloads Youtube Playlist in mp3 format, asks for range of songs (if range is out of bounds only downloads the songs within available range)
 function Download-Playlist {
     $UserInput = Read-Host "Enter A Youtube Playlist Link"
     $link = $UserInput
+    $UserInput = Read-Host "Enter AutoNumber Start"
+    $autonumber = $UserInput
     $UserInput = Read-Host "Enter Starting Range"
     $start = $UserInput
     $UserInput = Read-Host "Enter Ending Range"
     $end = $UserInput
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Song(s)"
-    .\yt-dlp.exe -f bestaudio $link -o "\Downloads\%(playlist_index)s-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end
+    .\yt-dlp.exe -f bestaudio $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber 
     Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Song(s) Complete"
     AutoConvert-AudioFiles
 }
 
-#Helper method to convert downloaded audio files
+function Custom-Commands-List {
+    Clear-Host
+    Write-Host -BackgroundColor Blue -ForegroundColor Black "Command Example ($ means input variable): "
+    
+    Write-Host -BackgroundColor Red -ForegroundColor Black "Start Command (Mandatory)" -NoNewLine
+    Write-Host -BackgroundColor Cyan -ForegroundColor Black 'Download Type (Optional/Raw File)' -NoNewLine
+    Write-Host -BackgroundColor Green -ForegroundColor Black 'Media Link (Mandatory)' -NoNewLine
+    Write-Host -BackgroundColor Yellow -ForegroundColor Black "Location, Structure (Optional)"
+
+    Write-Host -BackgroundColor Red -ForegroundColor Black "yt-dlp.exe " -NoNewLine
+    Write-Host -BackgroundColor Cyan -ForegroundColor Black "-f bestaudio " -NoNewLine
+    Write-Host -BackgroundColor Green -ForegroundColor Black '$link ' -NoNewLine
+    Write-Host -BackgroundColor Yellow -ForegroundColor Black '-o "\Downloads\%(title)s.%(ext)s"'
+
+    Write-Host
+    Write-Host -BackgroundColor Blue -ForegroundColor Black "Extension Options"
+    Write-Host -BackgroundColor Cyan -ForegroundColor Black "-f bestaudio "
+    Write-Host -BackgroundColor Cyan -ForegroundColor Black "-f bestvideo "
+    Write-Host -BackgroundColor Cyan -ForegroundColor Black "-f bestaudio + bestvideo "
+    Write-Host 
+    Write-Host -BackgroundColor DarkMagenta -ForegroundColor Black "--cookies-from-browser [brave, chrome, chromium, edge, firefox, opera, safari] "
+    Write-Host -BackgroundColor DarkMagenta -ForegroundColor Black '--add-header $link '
+    Write-Host -BackgroundColor DarkMagenta -ForegroundColor Black '--autonumber-start $number '
+    Write-Host -BackgroundColor DarkMagenta -ForegroundColor Black '--playlist-start $start '
+    Write-Host -BackgroundColor DarkMagenta -ForegroundColor Black '--playlist-end $end '
+    Write-Host
+    Write-Host -BackgroundColor Yellow -ForegroundColor Black '-o "\Downloads\%(title)s.%(ext)s"'
+    Write-Host -BackgroundColor Yellow -ForegroundColor Black '-o "%(autonumber)0Nd-%(title)s.%(ext)s"'
+    Write-Host
+
+    Write-Host -BackgroundColor Blue -ForegroundColor Black "More Examples"
+    Write-Host -BackgroundColor Red -ForegroundColor Black "yt-dlp.exe " -NoNewLine
+    Write-Host -BackgroundColor Cyan -ForegroundColor Black "-f bestaudio " -NoNewLine
+    Write-Host -BackgroundColor DarkMagenta -ForegroundColor Black '--autonumber-start $number ' -NoNewLine
+    Write-Host -BackgroundColor DarkMagenta -ForegroundColor Black '--playlist-start $start ' -NoNewLine
+    Write-Host -BackgroundColor DarkMagenta -ForegroundColor Black '--playlist-end $end ' -NoNewLine
+    Write-Host -BackgroundColor Green -ForegroundColor Black '$link ' -NoNewLine
+    Write-Host -BackgroundColor Yellow -ForegroundColor Black '-o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s"'
+
+    Write-Host -BackgroundColor Red -ForegroundColor Black "yt-dlp.exe " -NoNewLine
+    Write-Host -BackgroundColor DarkMagenta -ForegroundColor Black '--add-header "Referer: https://girlsfrontline.kr/db/musicplayer/" ' -NoNewLine
+    Write-Host -BackgroundColor DarkMagenta -ForegroundColor Black '-a templist.txt ' -NoNewLine
+    Write-Host -BackgroundColor Yellow -ForegroundColor Black '-o "%(autonumber)03d-(%(id)s).%(ext)s"'
+}
+
+# 7 Updates youtube-dl
+function Update-Youtube {
+    .\yt-dlp.exe -U
+}
+
+
+
+#Helper method (1,5) to convert downloaded audio files
 function AutoConvert-AudioFiles {
     
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Converting Audio Files"
@@ -129,7 +181,7 @@ function AutoConvert-AudioFiles {
     Remove-Item $path\*.m4a
     Write-Host -BackgroundColor Green -ForegroundColor Black "Audio Files Converted"
 }
-#Helper method to convert downloaded video files
+#Helper method (2) to convert downloaded video files
 function AutoConvert-VideoFiles {
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Converting Video Files"
     $path = [string](Get-Location) + "\Downloads"
@@ -149,7 +201,7 @@ function AutoConvert-VideoFiles {
     Remove-Item $path\*.m4a
     Write-Host -BackgroundColor Green -ForegroundColor Black "Video Files Converted"
 }
-#Helper method to convert downloaded image files
+#Helper method (4) to convert downloaded image files
 function AutoConvert-ImageFiles {
     Write-Host -BackgroundColor Green "CONVERTING IMAGE FILES"
     $path = [string](Get-Location) + "\Downloads"
@@ -162,6 +214,8 @@ function AutoConvert-ImageFiles {
     Remove-Item $path\*.webp
 }
 
+
+#Menu Execution
 do {
     Set-WindowSize
     Show-Menu
@@ -172,12 +226,13 @@ do {
     elseif ($UserInput -eq 3) { Convert-File }
     elseif ($UserInput -eq 4) { Grab-Thumbnail }
     elseif ($UserInput -eq 5) { Download-Playlist }
-    elseif ($UserInput -eq 6) { Update-Youtube $version = .\yt-dlp.exe --version }
-    elseif ($UserInput -eq 7) { 'Exiting...' }
+    elseif ($UserInput -eq 6) { Custom-Commands-List }
+    elseif ($UserInput -eq 7) { Update-Youtube $version = .\yt-dlp.exe --version }
+    elseif ($UserInput -eq 8) { 'Exiting...' }
     else { "Invalid Input" }
-    if ($UserInput -ne 7) {
+    if ($UserInput -ne 8) {
         pause
     }
     
 }
-until ($UserInput -eq '7')
+until ($UserInput -eq '8')

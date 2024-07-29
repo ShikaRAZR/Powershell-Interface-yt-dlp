@@ -154,6 +154,7 @@ function Custom-Commands-List {
 # 7 Updates youtube-dl
 function Update-Youtube {
     .\yt-dlp.exe -U
+    $script:version = .\yt-dlp.exe --version
 }
 
 

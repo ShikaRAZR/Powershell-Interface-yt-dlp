@@ -15,9 +15,9 @@ function Show-Menu {
     Write-Host "Youtube-dl Version: $version"
     Write-Host "1: Download Song"
     Write-Host "2: Download Video"
-    Write-Host "3: Convert File"
-    Write-Host "4: Youtube Video Thumbnail"
-    Write-Host "5: Download Youtube Playlist (Autonumber Start, Specific Range, With Prefix #)"
+    Write-Host "3: Download Thumbnail"
+    Write-Host "4: Download Youtube Playlist (Autonumber Start, Specific Range, With Prefix #)"
+    Write-Host "5: Convert File"
     Write-Host "6: Custom Commands List"
     Write-Host "7: Update"
     Write-Host "8: Exit"
@@ -44,59 +44,23 @@ function Download-Video {
     AutoConvert-VideoFiles
 }
 
-# 3 Converts a file type in the current directory
-function Convert-File {
-    Write-Host "All files in the directory with the initial format will be converted to final format."
-    $UserInput = Read-Host "Enter Initial Format"
-    $formatOne = $UserInput
-    $UserInput = Read-Host "Enter Final Format"
-    $formatTwo = $UserInput
-    $path = [string](Get-Location) + "\Downloads"
-    Get-ChildItem -Path ($path) -Filter *.$formatOne |
-    Foreach-Object {
-        $name = "$_"
-        $name = $name -replace ".$formatOne", ""
-        .\ffmpeg.exe -i $path'\'$_ "$path\$name.$formatTwo"
-    }
-    Write-Host -BackgroundColor Green -ForegroundColor Black "Conversion Complete"
-}
-
-# 4 Grabs youtube video thumbnail
+# 3 Grabs youtube video thumbnail
 function Grab-Thumbnail {
-    Write-Host "1: Without Prefix Number (Single YT Vids)?"
-    Write-Host "2: With Prefix Number (For YT Playlists)?"
-    $UserInput = Read-Host 
     $link = Read-Host "Enter A Youtube Link"
-    if ($UserInput -eq 1) { 
-        Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Thumbnail(s)"
-        .\yt-dlp.exe $link -o "\Downloads\%(title)s.%(ext)s" --write-thumbnail --skip-download 
-        AutoConvert-ImageFiles
-        Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Thumbnail(s) Complete"
-    }
-    elseif ($UserInput -eq 2) { 
-        Write-Host "Playlist Range"
-        $UserInput = Read-Host "Enter AutoNumber Start"
-        $autonumber = $UserInput
-        $UserInput = Read-Host "Enter Starting Range"
-        $start = $UserInput
-        $UserInput = Read-Host "Enter Ending Range"
-        $end = $UserInput
-        Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Thumbnail(s)"
-        .\yt-dlp.exe $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end  --autonumber-start $autonumber --write-thumbnail --skip-download 
-        AutoConvert-ImageFiles
-        Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Thumbnail(s) Complete"
-    }
-    else { "Invalid Input" }
-    
+    Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Thumbnail(s)"
+    .\yt-dlp.exe $link -o "\Downloads\%(title)s.%(ext)s" --write-thumbnail --skip-download 
+    AutoConvert-ImageFiles
+    Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Thumbnail(s) Complete"    
 }
 
-# 5 Downloads Youtube Playlist in mp3 format, asks for range of songs (if range is out of bounds only downloads the songs within available range)
+# 4 Downloads Youtube Playlist in mp3 format, asks for range of songs (if range is out of bounds only downloads the songs within available range)
 function Download-Playlist {
     Write-Host "1: Audio"
     Write-Host "2: Video"
+    Write-Host "3: Thumbnail"
     $UserInput = Read-Host
     $type = $UserInput
-    if (($type -ne 1) -and ($type -ne 2)) { 
+    if (($type -ne 1) -and ($type -ne 2) -and ($type -ne 3)) { 
         Write-Host "Invalid Input"
         Return
     }
@@ -117,7 +81,28 @@ function Download-Playlist {
         .\yt-dlp.exe -f bestvideo+bestaudio $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
         AutoConvert-VideoFiles
     }
+    if ($type -eq 3){
+        .\yt-dlp.exe $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end  --autonumber-start $autonumber --write-thumbnail --skip-download 
+        AutoConvert-ImageFiles
+    }
     Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Song(s) Complete"
+}
+
+# 5 Converts a file type in the current directory
+function Convert-File {
+    Write-Host "All files in the directory with the initial format will be converted to final format."
+    $UserInput = Read-Host "Enter Initial Format"
+    $formatOne = $UserInput
+    $UserInput = Read-Host "Enter Final Format"
+    $formatTwo = $UserInput
+    $path = [string](Get-Location) + "\Downloads"
+    Get-ChildItem -Path ($path) -Filter *.$formatOne |
+    Foreach-Object {
+        $name = "$_"
+        $name = $name -replace ".$formatOne", ""
+        .\ffmpeg.exe -i $path'\'$_ "$path\$name.$formatTwo"
+    }
+    Write-Host -BackgroundColor Green -ForegroundColor Black "Conversion Complete"
 }
 
 function Custom-Commands-List {
@@ -238,9 +223,9 @@ do {
 
     if ($UserInput -eq 1) { Download-Song }
     elseif ($UserInput -eq 2) { Download-Video }
-    elseif ($UserInput -eq 3) { Convert-File }
-    elseif ($UserInput -eq 4) { Grab-Thumbnail }
-    elseif ($UserInput -eq 5) { Download-Playlist }
+    elseif ($UserInput -eq 3) { Grab-Thumbnail }
+    elseif ($UserInput -eq 4) { Download-Playlist }
+    elseif ($UserInput -eq 5) { Convert-File }
     elseif ($UserInput -eq 6) { Custom-Commands-List }
     elseif ($UserInput -eq 7) { Update-Youtube $version = .\yt-dlp.exe --version }
     elseif ($UserInput -eq 8) { 'Exiting...' }

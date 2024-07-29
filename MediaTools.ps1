@@ -92,6 +92,14 @@ function Grab-Thumbnail {
 
 # 5 Downloads Youtube Playlist in mp3 format, asks for range of songs (if range is out of bounds only downloads the songs within available range)
 function Download-Playlist {
+    Write-Host "1: Audio"
+    Write-Host "2: Video"
+    $UserInput = Read-Host
+    $type = $UserInput
+    if (($type -ne 1) -and ($type -ne 2)) { 
+        Write-Host "Invalid Input"
+        Return
+    }
     $UserInput = Read-Host "Enter A Youtube Playlist Link"
     $link = $UserInput
     $UserInput = Read-Host "Enter AutoNumber Start"
@@ -101,9 +109,15 @@ function Download-Playlist {
     $UserInput = Read-Host "Enter Ending Range"
     $end = $UserInput
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Song(s)"
-    .\yt-dlp.exe -f bestaudio $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber 
+    if ($type -eq 1){
+        .\yt-dlp.exe -f bestaudio $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
+        AutoConvert-AudioFiles
+    }
+    if ($type -eq 2){
+        .\yt-dlp.exe -f bestvideo+bestaudio $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
+        AutoConvert-VideoFiles
+    }
     Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Song(s) Complete"
-    AutoConvert-AudioFiles
 }
 
 function Custom-Commands-List {

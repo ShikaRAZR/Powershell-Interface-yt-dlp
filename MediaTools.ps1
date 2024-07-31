@@ -39,7 +39,7 @@ function Download-Video {
     $UserInput = Read-Host "Enter A Youtube Link"
     $link = $UserInput
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Video(s)"
-    .\yt-dlp.exe -f bestvideo+bestaudio $link -o "\Downloads\%(title)s.%(ext)s"
+    .\yt-dlp.exe -S "+codec:h265, +codec:h264" -f bestvideo+bestaudio $link -o "\Downloads\%(title)s.%(ext)s"
     Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Video(s) Complete"
     AutoConvert-VideoFiles
 }
@@ -78,7 +78,7 @@ function Download-Playlist {
         AutoConvert-AudioFiles
     }
     if ($type -eq 2) {
-        .\yt-dlp.exe -f bestvideo+bestaudio $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
+        .\yt-dlp.exe -S "+codec:h265, +codec:h264" -f bestvideo+bestaudio $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
         AutoConvert-VideoFiles
     }
     if ($type -eq 3) {
@@ -200,9 +200,10 @@ function AutoConvert-VideoFiles {
     Get-ChildItem -Path ($path) -Filter *.mkv |
     Foreach-Object {
         $name = "$_"
-        $name = $name -replace ".m4a", ""
+        $name = $name -replace ".mkv", ""
         .\ffmpeg.exe -i $path'\'$_ "$path\$name.mp4"
     }
+    # -vcodec libx264 -acodec aac 
     Remove-Item $path\*.webm
     Remove-Item $path\*.m4a
     Remove-Item $path\*.mkv

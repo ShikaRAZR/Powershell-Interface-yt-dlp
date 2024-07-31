@@ -16,7 +16,7 @@ function Show-Menu {
     Write-Host "1: Download Song"
     Write-Host "2: Download Video"
     Write-Host "3: Download Thumbnail"
-    Write-Host "4: Download Youtube Playlist (Autonumber Start, Specific Range, With Prefix #)"
+    Write-Host "4: Download Youtube Playlist (Adds Prefix # to filename (playlist order), Specific Range)"
     Write-Host "5: Convert File"
     Write-Host "6: Custom Commands List"
     Write-Host "7: Update"
@@ -66,7 +66,7 @@ function Download-Playlist {
     }
     $UserInput = Read-Host "Enter A Youtube Playlist Link"
     $link = $UserInput
-    $UserInput = Read-Host "Enter AutoNumber Start"
+    $UserInput = Read-Host "Enter Custom Prefix # (Usually 1)"
     $autonumber = $UserInput
     $UserInput = Read-Host "Enter Starting Range"
     $start = $UserInput

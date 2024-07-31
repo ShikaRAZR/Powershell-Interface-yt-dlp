@@ -9,11 +9,11 @@ $version = .\yt-dlp.exe --version
 function Show-Menu {
     Clear-Host
     Write-Host -BackgroundColor Blue -ForegroundColor Black "(Ctrl + C CANCELS ANY PROCESS GOING ON, may need to press twice)"
-    Write-Host -BackgroundColor Blue -ForegroundColor Black "(If there are any issues, try selecting the UPDATE option)"
+    Write-Host -BackgroundColor Blue -ForegroundColor Black "(If there are any issues, try selecting the UPDATE (7) option)"
     Write-Host "Media Tools Menu"
     Write-Host "$currentDirectory"
     Write-Host "Youtube-dl Version: $version"
-    Write-Host "1: Download Song"
+    Write-Host "1: Download Audio"
     Write-Host "2: Download Video"
     Write-Host "3: Download Thumbnail"
     Write-Host "4: Download Youtube Playlist (Adds Prefix # to filename (playlist order), Specific Range)"

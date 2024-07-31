@@ -73,15 +73,15 @@ function Download-Playlist {
     $UserInput = Read-Host "Enter Ending Range"
     $end = $UserInput
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Song(s)"
-    if ($type -eq 1){
+    if ($type -eq 1) {
         .\yt-dlp.exe -f bestaudio $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
         AutoConvert-AudioFiles
     }
-    if ($type -eq 2){
+    if ($type -eq 2) {
         .\yt-dlp.exe -f bestvideo+bestaudio $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
         AutoConvert-VideoFiles
     }
-    if ($type -eq 3){
+    if ($type -eq 3) {
         .\yt-dlp.exe $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end  --autonumber-start $autonumber --write-thumbnail --skip-download 
         AutoConvert-ImageFiles
     }
@@ -197,8 +197,15 @@ function AutoConvert-VideoFiles {
         $name = $name -replace ".m4a", ""
         .\ffmpeg.exe -i $path'\'$_ "$path\$name.mp4"
     }
+    Get-ChildItem -Path ($path) -Filter *.mkv |
+    Foreach-Object {
+        $name = "$_"
+        $name = $name -replace ".m4a", ""
+        .\ffmpeg.exe -i $path'\'$_ "$path\$name.mp4"
+    }
     Remove-Item $path\*.webm
     Remove-Item $path\*.m4a
+    Remove-Item $path\*.mkv
     Write-Host -BackgroundColor Green -ForegroundColor Black "Video Files Converted"
 }
 #Helper method (4) to convert downloaded image files

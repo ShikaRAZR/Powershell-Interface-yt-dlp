@@ -29,7 +29,7 @@ function Download-Song {
     $UserInput = Read-Host "Enter A Youtube Link"
     $link = $UserInput
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Song(s)"
-    .\yt-dlp.exe -f bestaudio $link -o "\Downloads\%(title)s.%(ext)s"
+    .\yt-dlp.exe -f bestaudio --audio-format mp3 $link -o "\Downloads\%(title)s.%(ext)s"
     Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Song(s) Complete"
     AutoConvert-AudioFiles
 }
@@ -39,7 +39,8 @@ function Download-Video {
     $UserInput = Read-Host "Enter A Youtube Link"
     $link = $UserInput
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Video(s)"
-    .\yt-dlp.exe -S "codec:h265" -f bestvideo+bestaudio $link -o "\Downloads\%(title)s.%(ext)s"
+    # -S "+codec:h264" 
+    .\yt-dlp.exe -f bestvideo+bestaudio $link -o "\Downloads\%(title)s.%(ext)s"
     Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Video(s) Complete"
     AutoConvert-VideoFiles
 }
@@ -78,7 +79,7 @@ function Download-Playlist {
         AutoConvert-AudioFiles
     }
     if ($type -eq 2) {
-        .\yt-dlp.exe -S "codec:h265" -f bestvideo+bestaudio $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
+        .\yt-dlp.exe -f bestvideo+bestaudio $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
         AutoConvert-VideoFiles
     }
     if ($type -eq 3) {
@@ -90,18 +91,36 @@ function Download-Playlist {
 
 # 5 Converts a file type in the current directory
 function Convert-File {
-    Write-Host "All files in the directory with the initial format will be converted to final format."
-    $UserInput = Read-Host "Enter Initial Format"
-    $formatOne = $UserInput
-    $UserInput = Read-Host "Enter Final Format"
-    $formatTwo = $UserInput
-    $path = [string](Get-Location) + "\Downloads"
-    Get-ChildItem -Path ($path) -Filter *.$formatOne |
-    Foreach-Object {
-        $name = "$_"
-        $name = $name -replace ".$formatOne", ""
-        .\ffmpeg.exe -i $path'\'$_ "$path\$name.$formatTwo"
+    Write-Host "All files in the directory with the initial format will be converted to final format. (.\Downloads\NewFileFormat\)"
+    Write-Host "1: Custom Extension"
+    Write-Host "2: VP9 To H.264 Compression"
+    $UserInput = Read-Host
+    $type = $UserInput
+    if (($type -ne 1) -and ($type -ne 2)) { 
+        Write-Host "Invalid Input"
+        Return
     }
+    $path = [string](Get-Location) + "\Downloads"
+    if ($type -eq 1) {
+        $UserInput = Read-Host "Enter Initial Format"
+        $formatOne = $UserInput
+        $UserInput = Read-Host "Enter Final Format"
+        $formatTwo = $UserInput
+        Get-ChildItem -Path ($path) -Filter *.$formatOne |
+        Foreach-Object {
+            $name = "$_"
+            $name = $name -replace ".$formatOne", ""
+            .\ffmpeg.exe -i $path'\'$_ "$path\NewFileFormat\$name.$formatTwo"
+        }
+    }
+    if ($type -eq 2) {
+        Get-ChildItem -Path ($path) -Filter *.mp4 |
+        Foreach-Object {
+            $name = "$_"
+            $name = $name -replace ".mp4", ""
+            .\ffmpeg.exe -i $path'\'$_ -vcodec libx264 -acodec aac "$path\NewFileFormat\$name.mp4"
+        }
+    }# -vcodec libx264 -acodec aac
     Write-Host -BackgroundColor Green -ForegroundColor Black "Conversion Complete"
 }
 
@@ -203,7 +222,6 @@ function AutoConvert-VideoFiles {
         $name = $name -replace ".mkv", ""
         .\ffmpeg.exe -i $path'\'$_ "$path\$name.mp4"
     }
-    # -vcodec libx264 -acodec aac 
     Remove-Item $path\*.webm
     Remove-Item $path\*.m4a
     Remove-Item $path\*.mkv

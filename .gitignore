@@ -1,6 +1,8 @@
-Downloads/*
 ffmpeg.exe
 ffplay.exe
 ffprobe.exe
 youtube-dl.exe
 yt-dlp.exe
+Downloads/*
+!/NewFileFormat/
+/NewFileFormat/*

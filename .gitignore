@@ -1,5 +1,6 @@
-Downloads/*
-!Downloads/NewFileFormat
+/Downloads/*
+/Downloads/NewFileFormat/*
+!Downloads/NewFileFormat/.gitkeep
 ffmpeg.exe
 ffplay.exe
 ffprobe.exe

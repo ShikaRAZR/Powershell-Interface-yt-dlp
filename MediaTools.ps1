@@ -36,11 +36,25 @@ function Download-Song {
 
 # 2 Downloads videos in mp4 format
 function Download-Video {
+     Write-Host "1: H.264, 1080p Max"
+    Write-Host "2: VP9, 4k Max"
+    $UserInput = Read-Host
+    $type = $UserInput
+    if (($type -ne 1) -and ($type -ne 2)) { 
+        Write-Host "Invalid Input"
+        Return
+    }
+
     $UserInput = Read-Host "Enter A Youtube Link"
     $link = $UserInput
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Video(s)"
     # -S "+codec:h264" 
-    .\yt-dlp.exe -f bestvideo+bestaudio $link -o "\Downloads\%(title)s.%(ext)s"
+    if ($type -eq 1) {
+        .\yt-dlp.exe -S "+codec:h264" -f bestvideo+bestaudio $link -o "\Downloads\%(title)s.%(ext)s"
+    }
+    if ($type -eq 2) {
+        .\yt-dlp.exe -f bestvideo+bestaudio $link -o "\Downloads\%(title)s.%(ext)s"
+    }
     Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Video(s) Complete"
     AutoConvert-VideoFiles
 }

@@ -2,7 +2,7 @@
 .Synopsis
 Script used to download media from youtube and convert media file types.
 .Description
-You have options to: Download Youtube Songs and videos, and convert video and audio files into other formats using youtube-dl and ffmpeg in a user-friendly menu
+You have options to: Download Youtube Songs and videos, and convert video and audio files into other formats using youtube-dl and ffmpeg in a simple menu
 #>
 $currentDirectory = (Get-Location)
 $version = .\yt-dlp.exe --version

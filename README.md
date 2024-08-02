@@ -11,7 +11,7 @@
 ## How To Setup
 - Place MediaTools.ps1 into a folder
 - make a new folder in the same directory - .\Downloads\
-- make a new folder in the Downlaods directory - .\Downloads\NewFileFormat\
+- make a new folder in the Downloads directory - .\Downloads\NewFileFormat\
 - Install exes and place into the same directory
   - https://www.gyan.dev/ffmpeg/builds/ (ffmpeg-git-essentials.7z)
     - ffmpeg.exe

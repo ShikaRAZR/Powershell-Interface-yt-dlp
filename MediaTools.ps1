@@ -193,9 +193,14 @@ function Update-Youtube {
 
 #Helper method (1,5) to convert downloaded audio files
 function AutoConvert-AudioFiles {
-    
-    Write-Host -BackgroundColor Yellow -ForegroundColor Black "Converting Audio Files"
     $path = [string](Get-Location) + "\Downloads"
+    $AudioFileCount = (Get-ChildItem -Path ($path+"\*.webm") | Measure-Object ).Count + (Get-ChildItem -Path ($path+"\*.m4a") | Measure-Object ).Count
+    Write-Host "webm/m4a file count: "$AudioFileCount
+    if ($AudioFileCount -eq 0) { 
+        Write-Host "No files to convert"
+        Return
+    }
+    Write-Host -BackgroundColor Yellow -ForegroundColor Black "Converting Audio Files"
     Get-ChildItem -Path ($path) -Filter *.webm |
     Foreach-Object {
         $name = "$_"
@@ -216,8 +221,14 @@ function AutoConvert-AudioFiles {
 }
 #Helper method (2) to convert downloaded video files
 function AutoConvert-VideoFiles {
-    Write-Host -BackgroundColor Yellow -ForegroundColor Black "Converting Video Files"
     $path = [string](Get-Location) + "\Downloads"
+    $VideoFileCount = (Get-ChildItem -Path ($path+"\*.webm") | Measure-Object ).Count + (Get-ChildItem -Path ($path+"\*.m4a") | Measure-Object ).Count + (Get-ChildItem -Path ($path+"\*.mkv") | Measure-Object ).Count
+    Write-Host "webm/m4a/mkv file count: "$VideoFileCount
+    if ($VideoFileCount -eq 0) { 
+        Write-Host "No files to convert"
+        Return
+    }
+    Write-Host -BackgroundColor Yellow -ForegroundColor Black "Converting Video Files"
     Get-ChildItem -Path ($path) -Filter *.webm |
     Foreach-Object {
         $name = "$_"
@@ -243,8 +254,14 @@ function AutoConvert-VideoFiles {
 }
 #Helper method (4) to convert downloaded image files
 function AutoConvert-ImageFiles {
-    Write-Host -BackgroundColor Green "CONVERTING IMAGE FILES"
     $path = [string](Get-Location) + "\Downloads"
+    $ImageFileCount = (Get-ChildItem -Path ($path+"\*.webp") | Measure-Object ).Count
+    Write-Host "webp file count: "$ImageFileCount
+    if ($ImageFileCount -eq 0) { 
+        Write-Host "No files to convert"
+        Return
+    }
+    Write-Host -BackgroundColor Yellow -ForegroundColor Black "CONVERTING IMAGE FILES"
     Get-ChildItem -Path ($path) -Filter *.webp |
     Foreach-Object {
         $name = "$_"
@@ -252,6 +269,7 @@ function AutoConvert-ImageFiles {
         .\ffmpeg.exe -i $path'\'$_ "$path\$name.jpg"
     }
     Remove-Item $path\*.webp
+    Write-Host -BackgroundColor Green -ForegroundColor Black "Image Files Converted"
 }
 
 

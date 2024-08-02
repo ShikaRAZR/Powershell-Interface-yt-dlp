@@ -257,7 +257,7 @@ function AutoConvert-ImageFiles {
 
 #Menu Execution
 do {
-    Set-WindowSize
+    $host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.size(100,30)
     Show-Menu
     $UserInput = Read-Host "Choose a choice by typing the corresponding number"
 

@@ -12,7 +12,7 @@
 - Place MediaTools.ps1 into a folder
 - make a new folder in the same directory - .\Downloads\
 - make a new folder in the Downloads directory - .\Downloads\NewFileFormat\
-- Install exes and place into the same directory
+- Install exes and place into the same directory as MediaTools.ps1
   - https://www.gyan.dev/ffmpeg/builds/ (ffmpeg-git-essentials.7z)
     - ffmpeg.exe
     - ffplay.exe

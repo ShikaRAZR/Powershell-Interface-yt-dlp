@@ -36,11 +36,12 @@ function Download-Song {
 
 # 2 Downloads videos in mp4 format
 function Download-Video {
-     Write-Host "1: H.264, 1080p Max"
-    Write-Host "2: VP9, 4k Max"
+    Write-Host "1: H.264, 1080p Max"
+    Write-Host "2: VP9, 4k Max (Best Quality)"
+    Write-Host "3: Standard (Twitter Links)"
     $UserInput = Read-Host
     $type = $UserInput
-    if (($type -ne 1) -and ($type -ne 2)) { 
+    if (($type -ne 1) -and ($type -ne 2) -and ($type -ne 3)) { 
         Write-Host "Invalid Input"
         Return
     }
@@ -54,6 +55,9 @@ function Download-Video {
     }
     if ($type -eq 2) {
         .\yt-dlp.exe -f bestvideo+bestaudio $link -o "\Downloads\%(title)s.%(ext)s"
+    }
+    if ($type -eq 3) {
+        .\yt-dlp.exe $link -o "\Downloads\%(title)s.%(ext)s"
     }
     Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Video(s) Complete"
     AutoConvert-VideoFiles
@@ -194,7 +198,7 @@ function Update-Youtube {
 #Helper method (1,5) to convert downloaded audio files
 function AutoConvert-AudioFiles {
     $path = [string](Get-Location) + "\Downloads"
-    $AudioFileCount = (Get-ChildItem -Path ($path+"\*.webm") | Measure-Object ).Count + (Get-ChildItem -Path ($path+"\*.m4a") | Measure-Object ).Count
+    $AudioFileCount = (Get-ChildItem -Path ($path + "\*.webm") | Measure-Object ).Count + (Get-ChildItem -Path ($path + "\*.m4a") | Measure-Object ).Count
     Write-Host "webm/m4a file count: "$AudioFileCount
     if ($AudioFileCount -eq 0) { 
         Write-Host "No files to convert"
@@ -222,7 +226,7 @@ function AutoConvert-AudioFiles {
 #Helper method (2) to convert downloaded video files
 function AutoConvert-VideoFiles {
     $path = [string](Get-Location) + "\Downloads"
-    $VideoFileCount = (Get-ChildItem -Path ($path+"\*.webm") | Measure-Object ).Count + (Get-ChildItem -Path ($path+"\*.m4a") | Measure-Object ).Count + (Get-ChildItem -Path ($path+"\*.mkv") | Measure-Object ).Count
+    $VideoFileCount = (Get-ChildItem -Path ($path + "\*.webm") | Measure-Object ).Count + (Get-ChildItem -Path ($path + "\*.m4a") | Measure-Object ).Count + (Get-ChildItem -Path ($path + "\*.mkv") | Measure-Object ).Count
     Write-Host "webm/m4a/mkv file count: "$VideoFileCount
     if ($VideoFileCount -eq 0) { 
         Write-Host "No files to convert"
@@ -255,7 +259,7 @@ function AutoConvert-VideoFiles {
 #Helper method (4) to convert downloaded image files
 function AutoConvert-ImageFiles {
     $path = [string](Get-Location) + "\Downloads"
-    $ImageFileCount = (Get-ChildItem -Path ($path+"\*.webp") | Measure-Object ).Count
+    $ImageFileCount = (Get-ChildItem -Path ($path + "\*.webp") | Measure-Object ).Count
     Write-Host "webp file count: "$ImageFileCount
     if ($ImageFileCount -eq 0) { 
         Write-Host "No files to convert"
@@ -275,7 +279,7 @@ function AutoConvert-ImageFiles {
 
 #Menu Execution
 do {
-    $host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.size(100,30)
+    $host.UI.RawUI.WindowSize = New-Object System.Management.Automation.Host.size(100, 30)
     Show-Menu
     $UserInput = Read-Host "Choose a choice by typing the corresponding number"
 

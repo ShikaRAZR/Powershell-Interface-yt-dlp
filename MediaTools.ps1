@@ -28,8 +28,9 @@ function Show-Menu {
 function Download-Song {
     $UserInput = Read-Host "Enter A Youtube Link"
     $link = $UserInput
+    $path = [string](Get-Location) + "$path\Downloads\%(title)s.%(ext)s"
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Song(s)"
-    .\yt-dlp.exe -f bestaudio --audio-format mp3 $link -o "\Downloads\%(title)s.%(ext)s"
+    .\yt-dlp.exe -f bestaudio --audio-format mp3 $link -o "$path"
     Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Song(s) Complete"
     AutoConvert-AudioFiles
 }
@@ -48,16 +49,17 @@ function Download-Video {
 
     $UserInput = Read-Host "Enter A Youtube Link"
     $link = $UserInput
+    $path = [string](Get-Location) + "$path\Downloads\%(title)s.%(ext)s"
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Video(s)"
     # -S "+codec:h264" 
     if ($type -eq 1) {
-        .\yt-dlp.exe -S "+codec:h264" -f bestvideo+bestaudio $link -o "\Downloads\%(title)s.%(ext)s"
+        .\yt-dlp.exe -S "+codec:h264" -f bestvideo+bestaudio $link -o "$path"
     }
     if ($type -eq 2) {
-        .\yt-dlp.exe -f bestvideo+bestaudio $link -o "\Downloads\%(title)s.%(ext)s"
+        .\yt-dlp.exe -f bestvideo+bestaudio $link -o "$path"
     }
     if ($type -eq 3) {
-        .\yt-dlp.exe $link -o "\Downloads\%(title)s.%(ext)s"
+        .\yt-dlp.exe $link -o "$path"
     }
     Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Video(s) Complete"
     AutoConvert-VideoFiles
@@ -66,8 +68,9 @@ function Download-Video {
 # 3 Grabs youtube video thumbnail
 function Grab-Thumbnail {
     $link = Read-Host "Enter A Youtube Link"
+    $path = [string](Get-Location) + "$path\Downloads\%(title)s.%(ext)s"
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Thumbnail(s)"
-    .\yt-dlp.exe $link -o "\Downloads\%(title)s.%(ext)s" --write-thumbnail --skip-download 
+    .\yt-dlp.exe $link -o "$path" --write-thumbnail --skip-download 
     AutoConvert-ImageFiles
     Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Thumbnail(s) Complete"    
 }
@@ -92,16 +95,17 @@ function Download-Playlist {
     $UserInput = Read-Host "Enter Ending Range"
     $end = $UserInput
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Song(s)"
+    $path = [string](Get-Location) + "$path"
     if ($type -eq 1) {
-        .\yt-dlp.exe -f bestaudio $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
+        .\yt-dlp.exe -f bestaudio $link -o "$path\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
         AutoConvert-AudioFiles
     }
     if ($type -eq 2) {
-        .\yt-dlp.exe -f bestvideo+bestaudio $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
+        .\yt-dlp.exe -f bestvideo+bestaudio $link -o "$path\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
         AutoConvert-VideoFiles
     }
     if ($type -eq 3) {
-        .\yt-dlp.exe $link -o "\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end  --autonumber-start $autonumber --write-thumbnail --skip-download 
+        .\yt-dlp.exe $link -o "$path\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end  --autonumber-start $autonumber --write-thumbnail --skip-download 
         AutoConvert-ImageFiles
     }
     Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Song(s) Complete"

@@ -113,7 +113,7 @@ function Download-Playlist {
 
 # 5 Converts a file type in the current directory
 function Convert-File {
-    Write-Host "All files in the directory with the initial format will be converted to final format. (.\Downloads\NewFileFormat\)"
+    Write-Host "All files in the directory (.\Downloads\) with the initial format will be converted to final format. (.\Downloads\NewFileFormat\)"
     Write-Host "1: Custom Extension"
     Write-Host "2: VP9 To H.264 Compression"
     $UserInput = Read-Host

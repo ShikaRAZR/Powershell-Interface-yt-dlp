@@ -13,11 +13,11 @@
 - make a new folder in the same directory - .\Downloads\
 - make a new folder in the Downloads directory - .\Downloads\NewFileFormat\
 - Install exes and place into the same directory as MediaTools.ps1
-  - https://www.gyan.dev/ffmpeg/builds/ (ffmpeg-git-essentials.7z)
+  - [Website](https://www.gyan.dev/ffmpeg/builds/) [ffmpeg-git-essentials.7z](https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z)
     - ffmpeg.exe
     - ffplay.exe
     - ffprobe.exe
-  - https://github.com/yt-dlp/yt-dlp (Installation Windows x64)
+  - [Website](https://github.com/yt-dlp/yt-dlp) [Installation Windows x64](https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe)
     - yt-dlp.exe
 - Run MediaTools.ps1 with powershell
 

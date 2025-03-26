@@ -202,8 +202,8 @@ function Update-Youtube {
 #Helper method (1,5) to convert downloaded audio files
 function AutoConvert-AudioFiles {
     $path = [string](Get-Location) + "\Downloads"
-    $AudioFileCount = (Get-ChildItem -Path ($path + "\*.webm") | Measure-Object ).Count + (Get-ChildItem -Path ($path + "\*.m4a") | Measure-Object ).Count
-    Write-Host "webm/m4a file count: "$AudioFileCount
+    $AudioFileCount = (Get-ChildItem -Path ($path + "\*.webm") | Measure-Object ).Count + (Get-ChildItem -Path ($path + "\*.m4a") | Measure-Object ).Count + (Get-ChildItem -Path ($path + "\*.mp4") | Measure-Object ).Count
+    Write-Host "webm/m4a/mp4 file count: "$AudioFileCount
     if ($AudioFileCount -eq 0) { 
         Write-Host "No files to convert"
         Return
@@ -223,8 +223,15 @@ function AutoConvert-AudioFiles {
         $name = $name -replace ".m4a", ""
         .\ffmpeg.exe -i $path'\'$_ "$path\$name.mp3"
     }
+    Get-ChildItem -Path ($path) -Filter *.mp4 |
+    Foreach-Object {
+        $name = "$_"
+        $name = $name -replace ".mp4", ""
+        .\ffmpeg.exe -i $path'\'$_ "$path\$name.mp3"
+    }
     Remove-Item $path\*.webm
     Remove-Item $path\*.m4a
+    Remove-Item $path\*.mp4
     Write-Host -BackgroundColor Green -ForegroundColor Black "Audio Files Converted"
 }
 #Helper method (2) to convert downloaded video files

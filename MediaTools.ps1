@@ -166,6 +166,8 @@ function Custom-Commands-List {
     Write-Host -BackgroundColor Cyan -ForegroundColor Black "-f bestvideo "
     Write-Host -BackgroundColor Cyan -ForegroundColor Black "-f bestaudio + bestvideo "
     Write-Host 
+    Write-Host -BackgroundColor DarkYellow -ForegroundColor Black "-F, --list-formats "
+    Write-Host
     Write-Host -BackgroundColor DarkMagenta -ForegroundColor Black "--cookies-from-browser [brave, chrome, chromium, edge, firefox, opera, safari] "
     Write-Host -BackgroundColor DarkMagenta -ForegroundColor Black '--add-header $link '
     Write-Host -BackgroundColor DarkMagenta -ForegroundColor Black '--autonumber-start $number '

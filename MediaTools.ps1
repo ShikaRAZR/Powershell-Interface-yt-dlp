@@ -29,10 +29,24 @@ function Download-Song {
     $UserInput = Read-Host "Enter A Youtube Link"
     $link = $UserInput
     $path = [string](Get-Location) + "$path\Downloads\%(title)s.%(ext)s"
+
+    Write-Host "1: MP3"
+    Write-Host "2: OGG (Opus, Remux)"
+    $fileType = Read-Host "Enter file type"
+    if (($fileType -ne 1) -and ($fileType -ne 2)) { 
+        Write-Host "Invalid Input"
+        Return
+    }
+
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Song(s)"
     .\yt-dlp.exe -f bestaudio --audio-format mp3 $link -o "$path"
     Write-Host -BackgroundColor Green -ForegroundColor Black "Downloading Song(s) Complete"
-    AutoConvert-AudioFiles
+    if ($fileType -eq 1) {
+        AutoConvert-AudioFiles
+    }
+    if ($fileType -eq 2) {
+        AutoConvert-AudioFiles -newExtension ".ogg"
+    }
 }
 
 # 2 Downloads videos in mp4 format
@@ -97,9 +111,23 @@ function Download-Playlist {
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Downloading Song(s)"
     $path = [string](Get-Location) + "$path"
     if ($type -eq 1) {
+        Write-Host "1: MP3"
+        Write-Host "2: OGG (Opus, Remux)"
+        $fileType = Read-Host "Enter file type"
+        if (($type -ne 1) -and ($type -ne 2)) { 
+            Write-Host "Invalid Input"
+            Return
+        }
         .\yt-dlp.exe -f bestaudio $link -o "$path\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
-        AutoConvert-AudioFiles
+
+        if ($fileType -eq 1) {
+            AutoConvert-AudioFiles
+        }
+        if ($fileType -eq 2) {
+            AutoConvert-AudioFiles -newExtension ".ogg"
+        }
     }
+
     if ($type -eq 2) {
         .\yt-dlp.exe -f bestvideo+bestaudio $link -o "$path\Downloads\%(autonumber)0d-%(title)s.%(ext)s" --playlist-start $start --playlist-end $end --autonumber-start $autonumber
         AutoConvert-VideoFiles
@@ -130,9 +158,10 @@ function Convert-File {
         $formatTwo = $UserInput
         Get-ChildItem -Path ($path) -Filter *.$formatOne |
         Foreach-Object {
-            $name = "$_"
-            $name = $name -replace ".$formatOne", ""
-            .\ffmpeg.exe -i $path'\'$_ "$path\NewFileFormat\$name.$formatTwo"
+            $inputFile = $_.FullName
+            $newFolderPath = Join-Path $path "NewFileFormat"
+            $outputFile = Join-Path $newFolderPath ($_.BaseName + "." + $formatTwo)
+            .\ffmpeg.exe -i "$inputFile" "$outputFile"
         }
     }
     if ($type -eq 2) {
@@ -201,8 +230,12 @@ function Update-Youtube {
 
 
 
-#Helper method (1,5) to convert downloaded audio files
+#Helper method (1,4) to convert downloaded audio files
 function AutoConvert-AudioFiles {
+    param(
+        [string]$newExtension = ".mp3"
+        #Default conversion is mp3
+    )
     $path = [string](Get-Location) + "\Downloads"
     $AudioFileCount = (Get-ChildItem -Path ($path + "\*.webm") | Measure-Object ).Count + (Get-ChildItem -Path ($path + "\*.m4a") | Measure-Object ).Count + (Get-ChildItem -Path ($path + "\*.mp4") | Measure-Object ).Count
     Write-Host "webm/m4a/mp4 file count: "$AudioFileCount
@@ -211,33 +244,31 @@ function AutoConvert-AudioFiles {
         Return
     }
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Converting Audio Files"
-    Get-ChildItem -Path ($path) -Filter *.webm |
+    Get-ChildItem -Path ($path) -File |
+    Where-Object {$_.Extension -in ".webm", ".m4a", ".mp4"} |
     Foreach-Object {
-        $name = "$_"
-        $name = $name -replace ".webm", ""
-        # $path'\'$_ is directory + \ + filename (location\file to be converted)
-        # "$path\$name.mp3" is directory + \ + filenametobeconverted (location\named and command to convert to mp3)
-        .\ffmpeg.exe -i $path'\'$_ "$path\$name.mp3" 
-    }
-    Get-ChildItem -Path ($path) -Filter *.m4a |
-    Foreach-Object {
-        $name = "$_"
-        $name = $name -replace ".m4a", ""
-        .\ffmpeg.exe -i $path'\'$_ "$path\$name.mp3"
-    }
-    Get-ChildItem -Path ($path) -Filter *.mp4 |
-    Foreach-Object {
-        $name = "$_"
-        $name = $name -replace ".mp4", ""
-        .\ffmpeg.exe -i $path'\'$_ "$path\$name.mp3"
+        $inputFile = $_.FullName
+        $outputFile = Join-Path $path ($_.BaseName + $newExtension)
+        # inputFile (file, with path and extension included to be converted)
+        # outputFile (path+name+new_extension to convert to mp3)
+        if ($newExtension -eq ".mp3") {
+            .\ffmpeg.exe -i "$inputFile" "$outputFile"
+        }
+        if ($newExtension -eq ".ogg") {
+            .\ffmpeg.exe -i "$inputFile" -c copy "$outputFile"
+        }
     }
     Remove-Item $path\*.webm
     Remove-Item $path\*.m4a
     Remove-Item $path\*.mp4
     Write-Host -BackgroundColor Green -ForegroundColor Black "Audio Files Converted"
 }
-#Helper method (2) to convert downloaded video files
+#Helper method (2,4) to convert downloaded video files
 function AutoConvert-VideoFiles {
+    param(
+        [string]$newExtension = ".mp4"
+        #Default conversion is mp4
+    )
     $path = [string](Get-Location) + "\Downloads"
     $VideoFileCount = (Get-ChildItem -Path ($path + "\*.webm") | Measure-Object ).Count + (Get-ChildItem -Path ($path + "\*.m4a") | Measure-Object ).Count + (Get-ChildItem -Path ($path + "\*.mkv") | Measure-Object ).Count
     Write-Host "webm/m4a/mkv file count: "$VideoFileCount
@@ -246,24 +277,13 @@ function AutoConvert-VideoFiles {
         Return
     }
     Write-Host -BackgroundColor Yellow -ForegroundColor Black "Converting Video Files"
-    Get-ChildItem -Path ($path) -Filter *.webm |
-    Foreach-Object {
-        $name = "$_"
-        $name = $name -replace ".webm", ""
-        .\ffmpeg.exe -i $path'\'$_ "$path\$name.mp4"
-    }
-    Get-ChildItem -Path ($path) -Filter *.m4a |
-    Foreach-Object {
-        $name = "$_"
-        $name = $name -replace ".m4a", ""
-        .\ffmpeg.exe -i $path'\'$_ "$path\$name.mp4"
-    }
-    Get-ChildItem -Path ($path) -Filter *.mkv |
-    Foreach-Object {
-        $name = "$_"
-        $name = $name -replace ".mkv", ""
-        .\ffmpeg.exe -i $path'\'$_ "$path\$name.mp4"
-    }
+    Get-ChildItem -Path ($path) -File |
+        Where-Object {$_.Extension -in ".webm", ".m4a", ".mkv"} |
+        Foreach-Object {
+            $inputFile = $_.FullName
+            $outputFile = Join-Path $path ($_.BaseName + $newExtension)
+            .\ffmpeg.exe -i "$inputFile" "$outputFile"
+        }
     Remove-Item $path\*.webm
     Remove-Item $path\*.m4a
     Remove-Item $path\*.mkv
